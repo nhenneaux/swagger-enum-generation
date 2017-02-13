@@ -17,7 +17,7 @@ public class User {
         this.name = name;
     }
 
-    @ApiModelProperty(value = "The synchronization status with the LDAP1")
+    @ApiModelProperty(value = "The synchronization status with the LDAP1", reference = "#/definitions/SynchronizationStatus")
     public SynchronizationStatus getLdap1() {
         return ldap1;
     }
@@ -26,6 +26,7 @@ public class User {
         this.ldap1 = ldap1;
     }
 
+    @ApiModelProperty(reference = "#/definitions/SynchronizationStatus")
     public SynchronizationStatus getLdap2() {
         return ldap2;
     }
