@@ -40,6 +40,10 @@ public class EnumAsModelAwareResolver extends ModelResolver {
     private String findReference(Type type) {
         JavaType javaType = _mapper.constructType(type);
         Class<?> rawClass = javaType.getRawClass();
+
+        if (!rawClass.isAnnotationPresent(ApiModel.class)) {
+            return rawClass.getSimpleName();
+        }
         ApiModel annotation = rawClass.getAnnotation(ApiModel.class);
         final String reference = annotation.reference();
         if (reference.trim().length() == 0) {
@@ -50,8 +54,7 @@ public class EnumAsModelAwareResolver extends ModelResolver {
 
     private boolean isEnumAnApiModel(Type type) {
         JavaType javaType = _mapper.constructType(type);
-        return javaType.isEnumType()
-                && javaType.getRawClass().isAnnotationPresent(ApiModel.class);
+        return javaType.isEnumType();
     }
 
     @Override
@@ -60,6 +63,11 @@ public class EnumAsModelAwareResolver extends ModelResolver {
         if (javaType.isEnumType()) {
             ModelImpl model = new ModelImpl();
             Class<?> rawClass = javaType.getRawClass();
+            model.setType(StringProperty.TYPE);
+            model.setEnum(findEnumConstants(rawClass));
+            if (!rawClass.isAnnotationPresent(ApiModel.class)) {
+                return model.name(rawClass.getSimpleName());
+            }
             ApiModel annotation = rawClass.getAnnotation(ApiModel.class);
             String reference = annotation.reference();
             if (reference.trim().length() == 0) {
@@ -67,11 +75,8 @@ public class EnumAsModelAwareResolver extends ModelResolver {
             } else {
                 model.setName(reference);
             }
-            model.setDescription(annotation.value());
-            model.setType(StringProperty.TYPE);
+            model.setDescription(annotation.description().trim().length() == 0 ? annotation.value() : annotation.description());
 
-            List<String> constants = findEnumConstants(rawClass);
-            model.setEnum(constants);
             return model;
         }
         return chain.next().resolve(type, context, chain);
