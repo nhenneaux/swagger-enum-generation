@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
+import nhenneaux.test.swagger.ext.EnumModelAwareBeanConfig;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -13,7 +14,7 @@ public class HelloSwaggerTest {
 
     @Test
     public void testEnum() throws JsonProcessingException {
-        final BeanConfig beanConfig = new BeanConfig();
+        final BeanConfig beanConfig = new EnumModelAwareBeanConfig();
         beanConfig.setResourcePackage(HelloSwagger.class.getPackage().getName());
         beanConfig.setScan();
         final Swagger swagger = beanConfig.getSwagger();
