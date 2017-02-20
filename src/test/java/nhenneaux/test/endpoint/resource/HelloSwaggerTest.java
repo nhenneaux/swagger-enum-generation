@@ -1,11 +1,11 @@
 package nhenneaux.test.endpoint.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.io.Files;
+import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
-import nhenneaux.test.swagger.ext.EnumModelAwareBeanConfig;
+import nhenneaux.test.swagger.ext.EnumAsModelAwareResolver;
 import org.junit.Test;
 
 import java.io.File;
@@ -19,7 +19,9 @@ public class HelloSwaggerTest {
 
     @Test
     public void testEnum() throws IOException {
-        final BeanConfig beanConfig = new EnumModelAwareBeanConfig();
+        ModelConverters.getInstance().addConverter(new EnumAsModelAwareResolver());
+
+        final BeanConfig beanConfig = new BeanConfig();
         beanConfig.setResourcePackage(HelloSwagger.class.getPackage().getName());
         beanConfig.setScan();
         final Swagger swagger = beanConfig.getSwagger();

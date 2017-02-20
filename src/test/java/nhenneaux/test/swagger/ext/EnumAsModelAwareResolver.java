@@ -1,12 +1,6 @@
 package nhenneaux.test.swagger.ext;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.JavaType;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
@@ -18,8 +12,12 @@ import io.swagger.models.properties.RefProperty;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
+
 public class EnumAsModelAwareResolver extends ModelResolver {
-    static final EnumAsModelAwareResolver INSTANCE = new EnumAsModelAwareResolver();
 
     public EnumAsModelAwareResolver() {
         super(Json.mapper());
@@ -29,7 +27,7 @@ public class EnumAsModelAwareResolver extends ModelResolver {
     public Property resolveProperty(Type type, ModelConverterContext context, Annotation[] annotations,
                                     Iterator<ModelConverter> chain) {
         if (isEnumAnApiModel(type)) {
-            String name = findName(type);
+            String name = findReference(type);
             // ask context to resolver enum type (for adding model definition
             // for enum under definitions section
             context.resolve(type);
@@ -39,13 +37,13 @@ public class EnumAsModelAwareResolver extends ModelResolver {
         return chain.next().resolveProperty(type, context, annotations, chain);
     }
 
-    private String findName(Type type) {
+    private String findReference(Type type) {
         JavaType javaType = _mapper.constructType(type);
         Class<?> rawClass = javaType.getRawClass();
         ApiModel annotation = rawClass.getAnnotation(ApiModel.class);
-        String reference = annotation.reference();
-        if (reference.length() == 0) {
-            reference = rawClass.getSimpleName();
+        final String reference = annotation.reference();
+        if (reference.trim().length() == 0) {
+            return rawClass.getSimpleName();
         }
         return reference;
     }
@@ -64,10 +62,11 @@ public class EnumAsModelAwareResolver extends ModelResolver {
             Class<?> rawClass = javaType.getRawClass();
             ApiModel annotation = rawClass.getAnnotation(ApiModel.class);
             String reference = annotation.reference();
-            if (reference.length() == 0) {
-                reference = rawClass.getSimpleName();
+            if (reference.trim().length() == 0) {
+                model.setName(rawClass.getSimpleName());
+            } else {
+                model.setName(reference);
             }
-            model.setName(reference);
             model.setDescription(annotation.value());
             model.setType(StringProperty.TYPE);
 
