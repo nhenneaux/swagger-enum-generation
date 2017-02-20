@@ -1,0 +1,68 @@
+{
+  "swagger" : "2.0",
+  "info" : { },
+  "tags" : [ {
+    "name" : "hello"
+  } ],
+  "paths" : {
+    "/helloSwagger/getUniqueUsers" : {
+      "get" : {
+        "tags" : [ "hello" ],
+        "summary" : "Get all unique customers",
+        "description" : "Get all customers matching the given search string.",
+        "operationId" : "getUniqueUsers",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "search",
+          "in" : "query",
+          "description" : "The search string is used to find customer by their name. Not case sensitive.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limits the size of the result set",
+          "required" : false,
+          "type" : "integer",
+          "default" : 50,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "uniqueItems" : true,
+              "items" : {
+                "$ref" : "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "SynchronizationStatus" : {
+      "type" : "string",
+      "description" : "The synchronization status with LDAP instance.",
+      "enum" : [ "UNKNOWN", "SYNC", "OFFLINE", "CONFLICT" ]
+    },
+    "User" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The user name"
+        },
+        "ldap1" : {
+          "description" : "The synchronization status with the LDAP1",
+          "$ref" : "#/definitions/SynchronizationStatus"
+        },
+        "ldap2" : {
+          "$ref" : "#/definitions/SynchronizationStatus"
+        }
+      }
+    }
+  }
+}

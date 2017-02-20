@@ -43,11 +43,11 @@ public class EnumAsModelAwareResolver extends ModelResolver {
         JavaType javaType = _mapper.constructType(type);
         Class<?> rawClass = javaType.getRawClass();
         ApiModel annotation = rawClass.getAnnotation(ApiModel.class);
-        String name = annotation.value();
-        if (name.length() == 0) {
-            name = rawClass.getSimpleName();
+        String reference = annotation.reference();
+        if (reference.length() == 0) {
+            reference = rawClass.getSimpleName();
         }
-        return name;
+        return reference;
     }
 
     private boolean isEnumAnApiModel(Type type) {
@@ -63,12 +63,12 @@ public class EnumAsModelAwareResolver extends ModelResolver {
             ModelImpl model = new ModelImpl();
             Class<?> rawClass = javaType.getRawClass();
             ApiModel annotation = rawClass.getAnnotation(ApiModel.class);
-            String name = annotation.value();
-            if (name.length() == 0) {
-                name = rawClass.getSimpleName();
+            String reference = annotation.reference();
+            if (reference.length() == 0) {
+                reference = rawClass.getSimpleName();
             }
-            model.setName(name);
-            model.setDescription(annotation.description());
+            model.setName(reference);
+            model.setDescription(annotation.value());
             model.setType(StringProperty.TYPE);
 
             List<String> constants = findEnumConstants(rawClass);
